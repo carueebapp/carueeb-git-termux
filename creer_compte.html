@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carueeb – Créer un compte</title>
+<style>
+  * {box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  body {height:100vh; background:linear-gradient(135deg,#5f7388,#2f3f52); color:#fff; display:flex; flex-direction:column; padding:16px;}
+  .container {flex:1; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:16px; max-width:360px; margin:0 auto; padding-bottom:50px;}
+  h1 {margin-bottom:24px; font-size:24px; text-align:center;}
+  .input-box {width:100%; position:relative;}
+  input {width:100%; padding:14px 16px; border-radius:14px; border:2px solid #fff; font-size:16px; outline:none; margin-bottom:16px; transition:border 0.2s;}
+  .btn-create {width:65%; padding:16px; border-radius:18px; border:none; background:#f2a64a; color:#fff; font-size:16px; font-weight:bold; cursor:pointer; margin-top:24px;}
+  .btn-create:hover {background:#d1842d;}
+  .text-link {margin-top:16px; font-size:14px; opacity:0.9; text-align:center;}
+  .text-link a {color:#f2a64a; text-decoration:none; font-weight:bold;}
+  .text-link a:hover {text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Créer un compte</h1>
+
+  <!-- Champs principaux -->
+  <div class="input-box">
+    <input type="text" id="nom" placeholder="Nom complet">
+  </div>
+  <div class="input-box">
+    <input type="text" id="email" placeholder="Email">
+  </div>
+  <div class="input-box">
+    <input type="text" id="numero" placeholder="Numéro de téléphone">
+  </div>
+  <div class="input-box">
+    <input type="password" id="password" placeholder="Mot de passe">
+  </div>
+
+  <!-- Bouton créer compte -->
+  <button class="btn-create" onclick="createAccount()">Créer un compte</button>
+
+  <!-- Lien connexion -->
+  <div class="text-link">
+    Vous avez déjà un compte ? <a href="connexion.html">Connexion</a>
+  </div>
+</div>
+
+<!-- Firebase + validation -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "TON_API_KEY",
+    authDomain: "TON_PROJECT.firebaseapp.com",
+    projectId: "TON_PROJECT",
+    storageBucket: "TON_PROJECT.appspot.com",
+    messagingSenderId: "TON_SENDER_ID",
+    appId: "TON_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  // Validation bordures rouges/vertes
+  const inputs = document.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.addEventListener('blur', () => {
+      if(!input.value) input.style.border = '2px solid red';
+      else input.style.border = '2px solid green';
+    });
+  });
+
+  function createAccount() {
+    let allFilled = true;
+    inputs.forEach(input => {
+      if(!input.value) allFilled = false;
+    });
+
+    if(!allFilled) {
+      alert("Veuillez remplir toutes les informations sur vous pour créer un compte.");
+      return;
+    }
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    auth.createUserWithEmailAndPassword(email,password)
+      .then(userCredential => {
+        alert("Compte créé !");
+        setTimeout(()=> { window.location.href = "validation.html"; }, 6000);
+      })
+      .catch(error => {
+        alert("Erreur : " + error.message);
+      });
+  }
+</script>
+
+</body>
+</html>

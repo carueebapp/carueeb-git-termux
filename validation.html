@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carueeb – Validation</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+
+/* BACKGROUND PRINCIPAL */
+body{
+  height:100vh;
+  background:linear-gradient(135deg,#5f7388,#2f3f52);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:center;
+  color:white;
+}
+
+/* CONTENEUR CENTRAGE TOTAL */
+.center-area{
+  flex:1;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+/* MESSAGE FELICITATION */
+.success-box{
+  width:100%;
+  max-width:420px;
+  background:linear-gradient(135deg,#f2a64a,#ffbe6b);
+  color:#2f3f52;
+  padding:28px;
+  border-radius:22px;
+  text-align:center;
+  font-size:18px;
+  line-height:1.6;
+  font-weight:600;
+
+  /* effet lumineux */
+  box-shadow:
+    0 0 25px rgba(242,166,74,0.6),
+    0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* ZONE BOUTON BAS */
+.bottom-area{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  padding-bottom:40px;
+}
+
+/* BOUTON SUIVANT */
+.next-btn{
+  width:65%;
+  max-width:320px;
+  padding:16px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(135deg,#f2a64a,#d1842d);
+  color:white;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+
+  box-shadow:0 6px 20px rgba(0,0,0,0.35);
+  transition:0.25s;
+}
+
+.next-btn:active{
+  transform:scale(0.96);
+}
+</style>
+</head>
+
+<body>
+
+<!-- MESSAGE CENTRÉ -->
+<div class="center-area">
+  <div class="success-box">
+    Félicitations votre compte a été créé avec succès.<br><br>
+    Soyez les bienvenus et profitez de Carueeb.
+  </div>
+</div>
+
+<!-- BOUTON BAS -->
+<div class="bottom-area">
+  <button class="next-btn" onclick="goFeed()">Suivant</button>
+</div>
+
+<script>
+
+/* BLOQUER RETOUR ARRIÈRE */
+history.pushState(null,null,location.href);
+window.onpopstate=function(){
+  history.go(1);
+};
+
+/* REDIRECTION FEED + BLOQUAGE */
+function goFeed(){
+  window.location.replace("feed.html");
+}
+
+</script>
+
+</body>
+</html>

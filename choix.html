@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carueeb – Choix</title>
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { height: 100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; background: linear-gradient(135deg, #5f7388, #2f3f52); color:#fff; }
+    h1 { font-size:28px; margin-bottom:40px; }
+    .button { 
+      width: 250px; 
+      padding:16px; 
+      margin:12px 0; 
+      border-radius:12px; 
+      border:none; 
+      font-size:18px; 
+      font-weight:bold; 
+      cursor:pointer; 
+      transition: background 0.3s; 
+    }
+    .btn-create { background:#f2a64a; color:#fff; }
+    .btn-create:hover { background:#d1842d; }
+    .btn-login { background:#6c8bbf; color:#fff; }
+    .btn-login:hover { background:#4e6a9e; }
+    .btn-firebase { background:#34a853; color:#fff; }
+    .btn-firebase:hover { background:#0f863d; }
+  </style>
+</head>
+<body>
+
+  <h1>Bienvenue sur Carueeb</h1>
+
+  <button class="button btn-create" onclick="window.location.href='creer_compte.html'">
+    Créer un compte
+  </button>
+
+  <button class="button btn-login" onclick="window.location.href='login.html'">
+    Connexion
+  </button>
+
+  <button class="button btn-firebase" onclick="firebaseLogin()">
+    Connexion Firebase
+  </button>
+
+  <script>
+    function firebaseLogin() {
+      alert("Connexion Firebase (à implémenter)");
+      // Ici tu pourras ajouter l'intégration Firebase auth
+    }
+  </script>
+
+</body>
+</html>

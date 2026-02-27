@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carueeb – Connexion</title>
+<style>
+  * {box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  body {height:100vh; display:flex; flex-direction:column; justify-content:flex-start; align-items:center; background:linear-gradient(135deg,#5f7388,#2f3f52); color:#fff; padding:16px;}
+
+  /* Top bar */
+  .top-bar {width:100%; display:flex; align-items:flex-start; margin-bottom:60px;}
+  .top-bar .brand {font-size:18px; font-weight:600; opacity:0.9;}
+
+  /* Formulaire */
+  .form-container {width:100%; max-width:360px; display:flex; flex-direction:column; gap:16px;}
+  .input-box {position:relative; width:100%;}
+  .input-box input {width:100%; padding:14px 48px 14px 16px; border-radius:14px; border:none; outline:none; font-size:16px;}
+
+  /* œil toggle visible */
+  .toggle-password {position:absolute; right:16px; top:50%; transform:translateY(-50%); cursor:pointer; opacity:0.8;}
+  .toggle-password svg {width:24px; height:24px; fill:#fff;}
+
+  /* Bouton connexion centré 50% */
+  .btn-login {width:50%; padding:14px; border-radius:18px; border:none; background:#f2a64a; color:#fff; font-size:16px; font-weight:bold; cursor:pointer; margin:20px auto 0 auto;}
+  .btn-login:hover {background:#d1842d;}
+
+  /* Lien créer compte bas de page */
+  .text-link {position:absolute; bottom:16px; font-size:13px; opacity:0.8; text-align:center; width:100%;}
+  .text-link a {color:#f2a64a; text-decoration:none; font-weight:bold;}
+  .text-link a:hover {text-decoration:underline;}
+</style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="brand">Carueeb</div>
+  </div>
+
+  <!-- Formulaire principal -->
+  <div class="form-container">
+    <div class="input-box">
+      <input type="text" id="email" placeholder="Email ou Numéro">
+    </div>
+    <div class="input-box">
+      <input type="password" id="password" placeholder="Mot de passe">
+      <span class="toggle-password" onclick="togglePassword()">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 5C7 5 2.73 8.11 1 12C2.73 15.89 7 19 12 19C17 19 21.27 15.89 23 12C21.27 8.11 17 5 12 5ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17ZM12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9Z"/>
+        </svg>
+      </span>
+    </div>
+
+    <!-- Bouton connexion -->
+    <button class="btn-login" onclick="loginUser()">Connexion</button>
+  </div>
+
+  <!-- Lien créer compte -->
+  <div class="text-link">
+    Vous n'avez pas de compte ? <a href="creer_compte.html">Créer un compte</a>
+  </div>
+
+  <!-- Firebase + Toggle mot de passe -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "TON_API_KEY",
+      authDomain: "TON_PROJECT.firebaseapp.com",
+      projectId: "TON_PROJECT",
+      storageBucket: "TON_PROJECT.appspot.com",
+      messagingSenderId: "TON_SENDER_ID",
+      appId: "TON_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function togglePassword() {
+      const pwd = document.getElementById('password');
+      pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    }
+
+    function loginUser() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => { window.location.href = "feed.html"; })
+        .catch(err => alert("Erreur : " + err.message));
+    }
+  </script>
+
+</body>

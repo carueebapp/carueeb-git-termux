@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carueeb – Feed Test</title>
+<link href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/css/ionicons.min.css" rel="stylesheet">
+<style>
+  * {box-sizing:border-box; margin:0; padding:0; font-family:Roboto,sans-serif;}
+  body {background:#f0f2f5; color:#222; display:flex; flex-direction:column; height:100vh; overflow:hidden;}
+
+  /* Top Bar */
+  .top-bar {
+    position:fixed; top:0; left:0; width:100%; height:60px;
+    background:#ffffffcc; display:flex; align-items:center; justify-content:space-between;
+    padding:0 15px; box-shadow:0 1px 4px rgba(0,0,0,0.1); z-index:10;
+  }
+  .top-bar .icon {font-size:24px; cursor:pointer; color:#333;}
+  .top-bar .title {font-size:18px; font-weight:bold; flex:1; text-align:center; color:#111;}
+
+  /* Scrollable Content */
+  .content {margin-top:60px; overflow-y:auto; flex:1; padding:10px 15px;}
+
+  /* Post card */
+  .post {background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:15px;}
+  .post-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+  .post-avatar {width:44px; height:44px; border-radius:50%; background:#ccc;}
+  .post-user {flex:1; margin-left:10px; font-weight:bold; font-size:16px;}
+  .post-time {font-size:12px; color:#777;}
+  .post-content {margin-top:8px; font-size:14px; color:#333;}
+  .post-actions {display:flex; justify-content:space-around; margin-top:12px;}
+  .post-actions button {
+    border:none; background:none; cursor:pointer; color:#555; font-size:16px;
+    display:flex; align-items:center; gap:4px; transition:0.2s;
+  }
+  .post-actions button:hover {color:#111;}
+
+  /* Floating + button */
+  .add-post {
+    position:fixed; bottom:70px; right:20px; width:60px; height:60px;
+    border-radius:50%; background:#3b82f6; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:32px; cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3);
+    transition:0.2s;
+  }
+  .add-post:hover {background:#2563eb;}
+
+  /* Navbar bottom */
+  .nav-bar {
+    position:fixed; bottom:0; left:0; width:100%; height:60px;
+    display:flex; justify-content:space-around; align-items:center;
+    background:#fff; border-top-left-radius:12px; border-top-right-radius:12px; box-shadow:0 -1px 4px rgba(0,0,0,0.1);
+  }
+  .nav-bar .icon {font-size:28px; cursor:pointer; color:#555; transition:0.2s;}
+  .nav-bar .icon.active {color:#3b82f6;}
+  .nav-bar .icon:hover {color:#111;}
+</style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <i class="icon ion-chevron-back" onclick="history.back()"></i>
+    <div class="title">Carueeb</div>
+    <i class="icon ion-search" onclick="alert('Recherche')"></i>
+  </div>
+
+  <!-- Scrollable content -->
+  <div class="content">
+
+    <!-- Fake Posts -->
+    <div class="post">
+      <div class="post-header">
+        <div style="display:flex; align-items:center;">
+          <div class="post-avatar"></div>
+          <div class="post-user">Faux Utilisateur 1</div>
+        </div>
+        <div class="post-time">1h</div>
+      </div>
+      <div class="post-content">Voici un post test pour le feed Carueeb.</div>
+      <div class="post-actions">
+        <button onclick="alert('Like')"><i class="icon ion-heart"></i>12</button>
+        <button onclick="alert('Comment')"><i class="icon ion-chatbubble"></i>3</button>
+        <button onclick="alert('Share')"><i class="icon ion-share"></i>1</button>
+        <button onclick="alert('Soutenir')"><i class="icon ion-gift"></i></button>
+      </div>
+    </div>
+
+    <div class="post">
+      <div class="post-header">
+        <div style="display:flex; align-items:center;">
+          <div class="post-avatar"></div>
+          <div class="post-user">Faux Utilisateur 2</div>
+        </div>
+        <div class="post-time">3h</div>
+      </div>
+      <div class="post-content">Autre publication pour tester le scroll et actions.</div>
+      <div class="post-actions">
+        <button onclick="alert('Like')"><i class="icon ion-heart"></i>5</button>
+        <button onclick="alert('Comment')"><i class="icon ion-chatbubble"></i>1</button>
+        <button onclick="alert('Share')"><i class="icon ion-share"></i>0</button>
+        <button onclick="alert('Soutenir')"><i class="icon ion-gift"></i></button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Floating + button -->
+  <div class="add-post" onclick="alert('Créer publication')">+</div>
+
+  <!-- Bottom nav -->
+  <div class="nav-bar">
+    <i class="icon ion-home active"></i>
+    <i class="icon ion-chatbubbles"></i>
+    <i class="icon ion-add-circle" style="font-size:36px;"></i>
+    <i class="icon ion-notifications"></i>
+    <i class="icon ion-person"></i>
+  </div>
+
+</body>
+</html>

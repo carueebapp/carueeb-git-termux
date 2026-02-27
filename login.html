@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carueeb – Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #5f7388, #2f3f52);
+      color: #fff;
+    }
+
+    /* Logo central */
+    .logo-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin-top: 40px;
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle at center, #f2a64a, #d1842d);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 80px;
+      font-weight: bold;
+      color: #fff;
+      position: relative;
+      transition: transform 0.3s;
+    }
+
+    .logo:hover {
+      transform: scale(1.1);
+    }
+
+    .logo::after {
+      content: "";
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .app-name {
+      margin-top: 16px;
+      font-size: 24px;
+      letter-spacing: 2px;
+      font-weight: 600;
+    }
+
+    /* Formulaire */
+    .form-container {
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 60px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border-radius: 12px;
+      border: none;
+      background: #f2a64a;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #d1842d;
+    }
+
+    /* 6 petites boules */
+    .dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0.5;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .dot:hover {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <div class="logo-container">
+    <div class="logo">C</div>
+    <div class="app-name">carueeb</div>
+  </div>
+
+  <!-- Formulaire Login -->
+  <div class="form-container">
+    <input type="text" placeholder="Email ou numéro">
+    <input type="password" placeholder="Mot de passe">
+    <button onclick="window.location.href='choix.html'">Connexion</button>
+  </div>
+
+  <!-- 6 petites boules -->
+  <div class="dots">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+</body>
+</html>
