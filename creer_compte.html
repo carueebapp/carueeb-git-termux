@@ -1,99 +1,274 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carueeb – Créer un compte</title>
-<style>
-  * {box-sizing:border-box; margin:0; padding:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
-  body {height:100vh; background:linear-gradient(135deg,#5f7388,#2f3f52); color:#fff; display:flex; flex-direction:column; padding:16px;}
-  .container {flex:1; overflow-y:auto; display:flex; flex-direction:column; align-items:center; gap:16px; max-width:360px; margin:0 auto; padding-bottom:50px;}
-  h1 {margin-bottom:24px; font-size:24px; text-align:center;}
-  .input-box {width:100%; position:relative;}
-  input {width:100%; padding:14px 16px; border-radius:14px; border:2px solid #fff; font-size:16px; outline:none; margin-bottom:16px; transition:border 0.2s;}
-  .btn-create {width:65%; padding:16px; border-radius:18px; border:none; background:#f2a64a; color:#fff; font-size:16px; font-weight:bold; cursor:pointer; margin-top:24px;}
-  .btn-create:hover {background:#d1842d;}
-  .text-link {margin-top:16px; font-size:14px; opacity:0.9; text-align:center;}
-  .text-link a {color:#f2a64a; text-decoration:none; font-weight:bold;}
-  .text-link a:hover {text-decoration:underline;}
-</style>
-</head>
-<body>
+import React, { useState } from "react";
+import {
+View,
+Text,
+TextInput,
+TouchableOpacity,
+ScrollView,
+StyleSheet
+} from "react-native";
 
-<div class="container">
-  <h1>Créer un compte</h1>
+import {
+createUserWithEmailAndPassword,
+sendEmailVerification
+} from "firebase/auth";
 
-  <!-- Champs principaux -->
-  <div class="input-box">
-    <input type="text" id="nom" placeholder="Nom complet">
-  </div>
-  <div class="input-box">
-    <input type="text" id="email" placeholder="Email">
-  </div>
-  <div class="input-box">
-    <input type="text" id="numero" placeholder="Numéro de téléphone">
-  </div>
-  <div class="input-box">
-    <input type="password" id="password" placeholder="Mot de passe">
-  </div>
+import { auth } from "../firebase";
 
-  <!-- Bouton créer compte -->
-  <button class="btn-create" onclick="createAccount()">Créer un compte</button>
+export default function CreateAccountScreen({ navigation }) {
 
-  <!-- Lien connexion -->
-  <div class="text-link">
-    Vous avez déjà un compte ? <a href="connexion.html">Connexion</a>
-  </div>
-</div>
+const [name,setName] = useState("");
+const [lastname,setLastname] = useState("");
+const [age,setAge] = useState("");
+const [country,setCountry] = useState("");
+const [email,setEmail] = useState("");
+const [phone,setPhone] = useState("");
+const [code,setCode] = useState("");
+const [confirmCode,setConfirmCode] = useState("");
 
-<!-- Firebase + validation -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "TON_API_KEY",
-    authDomain: "TON_PROJECT.firebaseapp.com",
-    projectId: "TON_PROJECT",
-    storageBucket: "TON_PROJECT.appspot.com",
-    messagingSenderId: "TON_SENDER_ID",
-    appId: "TON_APP_ID"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+const [errors,setErrors] = useState({});
 
-  // Validation bordures rouges/vertes
-  const inputs = document.querySelectorAll('input');
-  inputs.forEach(input => {
-    input.addEventListener('blur', () => {
-      if(!input.value) input.style.border = '2px solid red';
-      else input.style.border = '2px solid green';
-    });
-  });
 
-  function createAccount() {
-    let allFilled = true;
-    inputs.forEach(input => {
-      if(!input.value) allFilled = false;
-    });
 
-    if(!allFilled) {
-      alert("Veuillez remplir toutes les informations sur vous pour créer un compte.");
-      return;
-    }
+/* -------- VALIDATION -------- */
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+const validate = () => {
 
-    auth.createUserWithEmailAndPassword(email,password)
-      .then(userCredential => {
-        alert("Compte créé !");
-        setTimeout(()=> { window.location.href = "validation.html"; }, 6000);
-      })
-      .catch(error => {
-        alert("Erreur : " + error.message);
-      });
-  }
-</script>
+let err = {};
 
-</body>
-</html>
+if(name.trim().length < 3){
+err.name = "Veuillez entrer un nom valide";
+}
+
+if(parseInt(age) < 12){
+err.age = "Selon le règlement Carueeb, l'âge minimum pour utiliser la plateforme est de 12 ans.";
+}
+
+if(country.trim().length < 4){
+err.country = "Veuillez entrer un pays valide";
+}
+
+if(!email.includes("@") || !email.includes(".")){
+err.email = "Veuillez saisir une adresse email valide";
+}
+
+if(phone.length < 5){
+err.phone = "Veuillez saisir un numéro correct avec votre code du pays";
+}
+
+if(code.length !== 6){
+err.code = "Le code doit contenir exactement 6 caractères";
+}
+
+if(confirmCode !== code){
+err.confirmCode = "Veuillez confirmer le code que vous avez saisi";
+}
+
+setErrors(err);
+
+return Object.keys(err).length === 0;
+
+};
+
+
+
+/* -------- CREATION COMPTE -------- */
+
+const createAccount = async () => {
+
+if(!validate()) return;
+
+try{
+
+const userCredential = await createUserWithEmailAndPassword(
+auth,
+email,
+code
+);
+
+await sendEmailVerification(userCredential.user);
+
+navigation.replace("ValidationEmailScreen");
+
+}catch(error){
+
+setErrors({firebase:error.message});
+
+}
+
+};
+
+
+
+/* -------- NAVIGATION LOGIN -------- */
+
+const goToLogin = () => {
+
+navigation.navigate("LoginScreen");
+
+};
+
+
+
+return(
+
+<ScrollView contentContainerStyle={styles.container}>
+
+<Text style={styles.title}>Créer un compte</Text>
+
+
+<TextInput
+placeholder="Nom"
+style={[styles.input, errors.name && styles.error]}
+value={name}
+onChangeText={setName}
+/>
+{errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+
+
+<TextInput
+placeholder="Prénom (facultatif)"
+style={styles.input}
+value={lastname}
+onChangeText={setLastname}
+/>
+
+
+<TextInput
+placeholder="Age"
+keyboardType="numeric"
+style={[styles.input, errors.age && styles.error]}
+value={age}
+onChangeText={setAge}
+/>
+{errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
+
+
+<TextInput
+placeholder="Pays"
+style={[styles.input, errors.country && styles.error]}
+value={country}
+onChangeText={setCountry}
+/>
+{errors.country && <Text style={styles.errorText}>{errors.country}</Text>}
+
+
+<TextInput
+placeholder="Email"
+style={[styles.input, errors.email && styles.error]}
+value={email}
+onChangeText={setEmail}
+/>
+{errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+
+
+<TextInput
+placeholder="Numéro téléphone"
+keyboardType="phone-pad"
+style={[styles.input, errors.phone && styles.error]}
+value={phone}
+onChangeText={setPhone}
+/>
+{errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+
+
+<TextInput
+placeholder="Code (6 caractères)"
+secureTextEntry
+style={[styles.input, errors.code && styles.error]}
+value={code}
+onChangeText={setCode}
+/>
+{errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
+
+
+<TextInput
+placeholder="Confirmer le code"
+secureTextEntry
+style={[styles.input, errors.confirmCode && styles.error]}
+value={confirmCode}
+onChangeText={setConfirmCode}
+/>
+{errors.confirmCode && <Text style={styles.errorText}>{errors.confirmCode}</Text>}
+
+
+{errors.firebase && (
+<Text style={styles.errorText}>{errors.firebase}</Text>
+)}
+
+
+
+<TouchableOpacity
+style={styles.button}
+onPress={createAccount}
+>
+<Text style={styles.buttonText}>Créer un compte</Text>
+</TouchableOpacity>
+
+
+
+<TouchableOpacity onPress={goToLogin}>
+<Text style={styles.loginText}>
+Vous avez déjà un compte ? Connexion
+</Text>
+</TouchableOpacity>
+
+
+</ScrollView>
+
+);
+
+}
+
+
+
+const styles = StyleSheet.create({
+
+container:{
+padding:20,
+paddingBottom:80
+},
+
+title:{
+fontSize:26,
+marginBottom:30
+},
+
+input:{
+borderWidth:1,
+borderColor:"#ccc",
+borderRadius:10,
+padding:14,
+marginBottom:6
+},
+
+error:{
+borderColor:"red"
+},
+
+errorText:{
+color:"red",
+marginBottom:12,
+fontSize:12
+},
+
+button:{
+backgroundColor:"#3A7BFF",
+padding:16,
+borderRadius:12,
+marginTop:20
+},
+
+buttonText:{
+color:"white",
+textAlign:"center",
+fontWeight:"bold"
+},
+
+loginText:{
+marginTop:40,
+textAlign:"center",
+fontSize:14
+}
+
+});

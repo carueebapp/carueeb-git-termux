@@ -1,121 +1,550 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carueeb – Feed Test</title>
-<link href="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/css/ionicons.min.css" rel="stylesheet">
-<style>
-  * {box-sizing:border-box; margin:0; padding:0; font-family:Roboto,sans-serif;}
-  body {background:#f0f2f5; color:#222; display:flex; flex-direction:column; height:100vh; overflow:hidden;}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>carueeb — Feed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #071022;
+      --panel: #0b1220;
+      --muted: #9fb3c8;
+      --accent: #06b6d4;
+      --glass: rgba(255,255,255,0.03);
+      --card-border: rgba(255,255,255,0.03);
+      --text: #e6eef6;
+      --like: #ff6b81;
+      --radius: 12px;
+      --topbar-h: 64px;
+      --bottombar-h: 68px;
+    }
 
-  /* Top Bar */
-  .top-bar {
-    position:fixed; top:0; left:0; width:100%; height:60px;
-    background:#ffffffcc; display:flex; align-items:center; justify-content:space-between;
-    padding:0 15px; box-shadow:0 1px 4px rgba(0,0,0,0.1); z-index:10;
-  }
-  .top-bar .icon {font-size:24px; cursor:pointer; color:#333;}
-  .top-bar .title {font-size:18px; font-weight:bold; flex:1; text-align:center; color:#111;}
+    * { box-sizing: border-box; }
+    html,body { height:100%; margin:0; font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg,var(--bg),#041019); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 
-  /* Scrollable Content */
-  .content {margin-top:60px; overflow-y:auto; flex:1; padding:10px 15px;}
+    /* Layout */
+    .app {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 0 12px;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: var(--topbar-h) 1fr var(--bottombar-h);
+      gap: 12px;
+    }
 
-  /* Post card */
-  .post {background:#fff; border-radius:12px; padding:12px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:15px;}
-  .post-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
-  .post-avatar {width:44px; height:44px; border-radius:50%; background:#ccc;}
-  .post-user {flex:1; margin-left:10px; font-weight:bold; font-size:16px;}
-  .post-time {font-size:12px; color:#777;}
-  .post-content {margin-top:8px; font-size:14px; color:#333;}
-  .post-actions {display:flex; justify-content:space-around; margin-top:12px;}
-  .post-actions button {
-    border:none; background:none; cursor:pointer; color:#555; font-size:16px;
-    display:flex; align-items:center; gap:4px; transition:0.2s;
-  }
-  .post-actions button:hover {color:#111;}
+    /* Topbar */
+    .topbar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 6px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(4px);
+      border-radius: 10px;
+    }
+    .brand {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .brand .logo {
+      width:44px;height:44px;border-radius:10px;
+      background: linear-gradient(135deg,var(--accent),#14b8a6);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:700;color:#012026;
+      box-shadow: 0 6px 18px rgba(6,182,212,0.08);
+    }
+    .brand .title { font-weight:700; font-size:1rem; letter-spacing:0.2px; }
+    .topbar .search-btn {
+      display:flex;align-items:center;gap:8px;
+      background:var(--glass); border:1px solid var(--card-border);
+      padding:8px 10px;border-radius:10px;color:var(--text); cursor:pointer;
+    }
+    .topbar .search-bar { display:none; align-items:center; gap:8px; width:320px; max-width:50%; }
+    .search-bar input {
+      background:transparent;border:none;outline:none;color:var(--text);width:100%;
+    }
 
-  /* Floating + button */
-  .add-post {
-    position:fixed; bottom:70px; right:20px; width:60px; height:60px;
-    border-radius:50%; background:#3b82f6; color:#fff;
-    display:flex; align-items:center; justify-content:center; font-size:32px; cursor:pointer;
-    box-shadow:0 2px 8px rgba(0,0,0,0.3);
-    transition:0.2s;
-  }
-  .add-post:hover {background:#2563eb;}
+    /* Feed area (scrollable) */
+    .feed-area {
+      overflow-y: auto;
+      padding: 8px 4px;
+    }
+    .feed {
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      padding-bottom: 18px;
+    }
 
-  /* Navbar bottom */
-  .nav-bar {
-    position:fixed; bottom:0; left:0; width:100%; height:60px;
-    display:flex; justify-content:space-around; align-items:center;
-    background:#fff; border-top-left-radius:12px; border-top-right-radius:12px; box-shadow:0 -1px 4px rgba(0,0,0,0.1);
-  }
-  .nav-bar .icon {font-size:28px; cursor:pointer; color:#555; transition:0.2s;}
-  .nav-bar .icon.active {color:#3b82f6;}
-  .nav-bar .icon:hover {color:#111;}
-</style>
+    /* Card */
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      border-radius: var(--radius);
+      padding: 14px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 8px 30px rgba(2,6,23,0.55);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .card-header {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .user {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .avatar {
+      width:48px;height:48px;border-radius:50%;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#012026;
+      background:linear-gradient(135deg,#7c3aed,#06b6d4);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .meta { display:flex;flex-direction:column; }
+    .meta .name { font-size:0.95rem; font-weight:600; line-height:1; }
+    .meta .time { font-size:0.82rem; color:var(--muted); margin-top:4px; }
+
+    .more {
+      background:transparent;border:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px;
+    }
+    .more:hover { background:rgba(255,255,255,0.02); color:var(--text); }
+
+    /* Post body */
+    .post-text { font-size:0.97rem; color:var(--text); white-space:pre-wrap; }
+    .post-media {
+      border-radius: 12px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.02);
+      background: #07101a;
+    }
+    .post-media img { width:100%; height:auto; display:block; object-fit:cover; max-height:480px; }
+    .post-media .video-placeholder {
+      height: 260px;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--muted); font-weight:600; gap:10px;
+      background: linear-gradient(90deg, rgba(6,182,212,0.06), rgba(124,58,237,0.04));
+    }
+
+    /* Counters row */
+    .counters {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      width:100%;
+      font-size:0.92rem;
+      padding-top:6px;
+      border-top: 1px dashed rgba(255,255,255,0.02);
+    }
+    .counters .left { display:flex; gap:18px; align-items:center; color:var(--muted); }
+    .counters .right { color:var(--muted); font-size:0.9rem; }
+
+    .counter-item { display:flex; gap:8px; align-items:center; }
+
+    .icon {
+      width:18px;height:18px;display:inline-block;opacity:0.95;
+    }
+
+    /* Reaction rectangle */
+    .reactions {
+      margin-top:8px;
+      background: rgba(255,255,255,0.02);
+      padding:8px;
+      border-radius:10px;
+      display:flex; gap:8px; align-items:center; justify-content:space-between;
+    }
+    .reaction-buttons {
+      display:flex; gap:8px; align-items:center;
+    }
+    .reaction-buttons button {
+      background:transparent;border:none;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px;display:flex;gap:8px;align-items:center;
+    }
+    .reaction-buttons button:hover { background:rgba(255,255,255,0.02); color:var(--text); }
+    .reaction-buttons .like.active { color:var(--like); font-weight:700; }
+
+    /* Comment box (hidden by default) */
+    .comment-box { margin-top:8px; display:flex; gap:8px; align-items:center; }
+    .comment-box input {
+      flex:1;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text);
+    }
+    .comment-box button { padding:8px 12px;border-radius:10px;border:none;background:var(--accent);color:#022026;cursor:pointer;font-weight:600; }
+
+    /* Bottom nav */
+    .bottombar {
+      display:flex; align-items:center; justify-content:space-around; gap:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border-top:1px solid var(--card-border);
+      padding:8px 6px; border-radius:10px;
+    }
+    .nav-btn {
+      display:flex; flex-direction:column; align-items:center; gap:4px; justify-content:center;
+      color:var(--muted); text-decoration:none; font-size:0.75rem; background:transparent; border:none; cursor:pointer;
+      padding:6px;border-radius:10px;
+    }
+    .nav-btn svg { width:22px;height:22px; }
+    .nav-btn.active { color:var(--accent); }
+    .nav-btn.create { transform: translateY(-6px); background: linear-gradient(135deg,var(--accent),#7c3aed); padding:10px;border-radius:14px; color:#022026; box-shadow:0 8px 30px rgba(6,182,212,0.08); }
+    .nav-btn.create svg { width:26px;height:26px; }
+
+    /* other views placeholder */
+    .view-placeholder { display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); font-weight:600; font-size:1.1rem; }
+
+    /* Responsive */
+    @media (max-width:640px) {
+      .brand .title { display:none; }
+      .topbar .search-bar { display:none; }
+      .avatar { width:40px; height:40px; }
+      .nav-btn span { display:none; }
+    }
+  </style>
 </head>
 <body>
+  <div class="app" role="application" aria-label="Carueeb application">
 
-  <!-- Top bar -->
-  <div class="top-bar">
-    <i class="icon ion-chevron-back" onclick="history.back()"></i>
-    <div class="title">Carueeb</div>
-    <i class="icon ion-search" onclick="alert('Recherche')"></i>
-  </div>
-
-  <!-- Scrollable content -->
-  <div class="content">
-
-    <!-- Fake Posts -->
-    <div class="post">
-      <div class="post-header">
-        <div style="display:flex; align-items:center;">
-          <div class="post-avatar"></div>
-          <div class="post-user">Faux Utilisateur 1</div>
+    <!-- TOPBAR -->
+    <header class="topbar" role="banner">
+      <div class="brand" aria-label="carueeb brand">
+        <div class="logo" aria-hidden="true">C</div>
+        <div>
+          <div class="title">carueeb</div>
+          <div style="font-size:0.82rem;color:var(--muted)">Fil d'actualités</div>
         </div>
-        <div class="post-time">1h</div>
       </div>
-      <div class="post-content">Voici un post test pour le feed Carueeb.</div>
-      <div class="post-actions">
-        <button onclick="alert('Like')"><i class="icon ion-heart"></i>12</button>
-        <button onclick="alert('Comment')"><i class="icon ion-chatbubble"></i>3</button>
-        <button onclick="alert('Share')"><i class="icon ion-share"></i>1</button>
-        <button onclick="alert('Soutenir')"><i class="icon ion-gift"></i></button>
-      </div>
-    </div>
 
-    <div class="post">
-      <div class="post-header">
-        <div style="display:flex; align-items:center;">
-          <div class="post-avatar"></div>
-          <div class="post-user">Faux Utilisateur 2</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="search-bar" id="searchBar" role="search">
+          <input id="topSearchInput" placeholder="Rechercher..." aria-label="Recherche"/>
         </div>
-        <div class="post-time">3h</div>
+        <button class="search-btn" id="openSearch" aria-label="Ouvrir la recherche">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 21l-4.35-4.35M17.65 11A6.65 6.65 0 1 1 5 4.35 6.65 6.65 0 0 1 17.65 11z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        </button>
       </div>
-      <div class="post-content">Autre publication pour tester le scroll et actions.</div>
-      <div class="post-actions">
-        <button onclick="alert('Like')"><i class="icon ion-heart"></i>5</button>
-        <button onclick="alert('Comment')"><i class="icon ion-chatbubble"></i>1</button>
-        <button onclick="alert('Share')"><i class="icon ion-share"></i>0</button>
-        <button onclick="alert('Soutenir')"><i class="icon ion-gift"></i></button>
-      </div>
-    </div>
+    </header>
 
+    <!-- FEED AREA -->
+    <main class="feed-area" id="mainView" tabindex="0" aria-live="polite">
+      <!-- Views: feed & placeholders for messages, create, notifications, profile -->
+      <section id="view-feed" class="view">
+        <div class="feed" id="feed"></div>
+      </section>
+
+      <section id="view-messages" class="view" style="display:none;">
+        <div class="view-placeholder">Écran Messages (simulé). Clique sur Home pour revenir au feed.</div>
+      </section>
+
+      <section id="view-create" class="view" style="display:none;">
+        <div class="view-placeholder">Écran de création (Create). Ici tu pourras ouvrir une page pour créer un post.</div>
+      </section>
+
+      <section id="view-notifs" class="view" style="display:none;">
+        <div class="view-placeholder">Écran Notifications (simulé).</div>
+      </section>
+
+      <section id="view-profile" class="view" style="display:none;">
+        <div class="view-placeholder">Écran Profil personnel (simulé).</div>
+      </section>
+    </main>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottombar" role="navigation" aria-label="Barre de navigation">
+      <button class="nav-btn active" data-view="feed" id="nav-home" aria-label="Accueil">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10.5z"/></svg>
+        <span>Accueil</span>
+      </button>
+
+      <button class="nav-btn" data-view="messages" id="nav-msg" aria-label="Messages">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 6H3v12h6l3 3 3-3h6z"/></svg>
+        <span>Messages</span>
+      </button>
+
+      <button class="nav-btn create" data-view="create" id="nav-create" aria-label="Créer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></svg>
+        <span>Créer</span>
+      </button>
+
+      <button class="nav-btn" data-view="notifs" id="nav-notif" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.5-2.5h-5A2.5 2.5 0 0 0 12 22zm6-6V11c0-3.3-2.1-6-5-6V4a1 1 0 1 0-2 0v1c-2.9 0-5 2.7-5 6v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <span>Notifs</span>
+      </button>
+
+      <button class="nav-btn" data-view="profile" id="nav-profile" aria-label="Profil">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4 0-7 2-7 4v2h14v-2c0-2-3-4-7-4z"/></svg>
+        <span>Profil</span>
+      </button>
+    </nav>
   </div>
 
-  <!-- Floating + button -->
-  <div class="add-post" onclick="alert('Créer publication')">+</div>
+  <script>
+    // ======== Fake posts data (facile à supprimer / modifier) ========
+    // Tu peux modifier ce tableau ou le supprimer une fois terminé.
+    const fakePosts = [
+      { id:1, author:'Alice Leroy', avatarText:'AL', time:'il y a 2h', text:"Voici quelques photos de mon voyage ! J'ai adoré la vue.", media:{type:'image', src:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1200&auto=format&fit=crop&crop=entropy'} , views:128, likes:64, shares:12, comments:34, support:3 },
+      { id:2, author:'Marc Julien', avatarText:'MJ', time:'il y a 30 min', text:"Petite réflexion du jour : apprendre un peu chaque jour change tout.", media:null, views:54, likes:57, shares:3, comments:10, support:1 },
+      { id:3, author:'Véronique V.', avatarText:'VV', time:'il y a 1 jour', text:"Nouvelle vidéo : astuces rapides pour être plus productif.", media:{type:'video', src:''}, views:1023, likes:203, shares:21, comments:76, support:10 },
+      { id:4, author:'Samir K', avatarText:'SK', time:'il y a 3j', text:"Un cookie fait maison aujourd'hui 🍪", media:{type:'image', src:'https://images.unsplash.com/photo-1548946526-f69e2424cf45?q=80&w=1200&auto=format&fit=crop&crop=entropy'}, views:230, likes:89, shares:8, comments:12, support:2 },
+      { id:5, author:'Nora P', avatarText:'NP', time:'il y a 6h', text:"Voici un guide rapide sur l'organisation.", media:null, views:71, likes:12, shares:1, comments:4, support:0 },
+      { id:6, author:'Olivier M', avatarText:'OM', time:'il y a 4h', text:"RAPID TIP : 5 min d'exercice = meilleure concentration.", media:{type:'image', src:'https://images.unsplash.com/photo-1554284126-aa88f22d8d63?q=80&w=1200&auto=format&fit=crop&crop=entropy'}, views:410, likes:121, shares:15, comments:22, support:5 },
+      { id:7, author:'Camille R', avatarText:'CR', time:'il y a 10 min', text:"J'aime ces couleurs au lever du soleil 🌅", media:{type:'image', src:'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1200&auto=format&fit=crop&crop=entropy'}, views:88, likes:19, shares:2, comments:5, support:0 },
+      { id:8, author:'Tom L', avatarText:'TL', time:'Hier', text:"Test rapide d'un nouvel outil ✨", media:null, views:312, likes:64, shares:9, comments:14, support:7 },
+      { id:9, author:'Émilie S', avatarText:'ES', time:'il y a 2j', text:"Retour sur la conférence, des idées inspirantes.", media:{type:'video', src:''}, views:950, likes:300, shares:40, comments:80, support:20 },
+      { id:10, author:'Rachid A', avatarText:'RA', time:'il y a 7h', text:"Encore un beau coucher de soleil.", media:{type:'image', src:'https://images.unsplash.com/photo-1501973801540-537f08ccae7b?q=80&w=1200&auto=format&fit=crop&crop=entropy'}, views:150, likes:45, shares:6, comments:9, support:0 }
+    ];
 
-  <!-- Bottom nav -->
-  <div class="nav-bar">
-    <i class="icon ion-home active"></i>
-    <i class="icon ion-chatbubbles"></i>
-    <i class="icon ion-add-circle" style="font-size:36px;"></i>
-    <i class="icon ion-notifications"></i>
-    <i class="icon ion-person"></i>
-  </div>
+    // ======== Utilities ========
+    function el(tag, attrs = {}, children = []) {
+      const e = document.createElement(tag);
+      for (const k in attrs) {
+        if (k === 'class') e.className = attrs[k];
+        else if (k === 'html') e.innerHTML = attrs[k];
+        else e.setAttribute(k, attrs[k]);
+      }
+      (Array.isArray(children) ? children : [children]).forEach(c => {
+        if (!c) return;
+        if (typeof c === 'string') e.appendChild(document.createTextNode(c));
+        else e.appendChild(c);
+      });
+      return e;
+    }
 
+    // ======== Render feed ========
+    const feedEl = document.getElementById('feed');
+
+    function renderPost(post) {
+      const card = el('article', { class:'card', 'data-id':post.id, 'aria-label': `Post de ${post.author}` });
+
+      // header
+      const avatar = el('div', { class:'avatar', 'aria-hidden':'true' }, post.avatarText);
+      const name = el('div', { class:'name', id:`author-${post.id}` }, post.author);
+      const time = el('div', { class:'time' }, post.time);
+      const meta = el('div', { class:'meta' }, [name, time]);
+      const user = el('div', { class:'user' }, [avatar, meta]);
+
+      const moreBtn = el('button', { class:'more', 'aria-label':'Plus d\'options' }, '⋯');
+
+      const header = el('div', { class:'card-header' }, [user, moreBtn]);
+      card.appendChild(header);
+
+      // body
+      const body = el('div', { class:'card-body' });
+      if (post.text) {
+        const p = el('div', { class:'post-text' }, post.text);
+        body.appendChild(p);
+      }
+      if (post.media) {
+        const mediaWrap = el('div', { class:'post-media', role:'group', 'aria-label':'Média du post' });
+        if (post.media.type === 'image') {
+          const img = el('img', { class:'post-image', src: post.media.src, alt: post.author + ' image' });
+          // clicking image increases views
+          img.addEventListener('click', () => incrementViews(post.id, 1));
+          mediaWrap.appendChild(img);
+        } else if (post.media.type === 'video') {
+          const placeholder = el('div', { class:'video-placeholder', role:'button', tabindex:'0', 'aria-label':'Lire la vidéo' }, '▶️ Lire la vidéo (placeholder)');
+          placeholder.addEventListener('click', () => incrementViews(post.id, 10));
+          placeholder.addEventListener('keydown', (e)=> { if (e.key === 'Enter') incrementViews(post.id, 10); });
+          mediaWrap.appendChild(placeholder);
+        }
+        body.appendChild(mediaWrap);
+      }
+      card.appendChild(body);
+
+      // counters
+      const leftCounters = el('div', { class:'left' }, [
+        el('div', { class:'counter-item views' }, [
+          svgIcon('eye'),
+          el('span', { class:'count views-count', id:`views-${post.id}` }, String(post.views))
+        ]),
+        el('div', { class:'counter-item likes' }, [
+          svgIcon('heart'),
+          el('span', { class:'count likes-count', id:`likes-${post.id}` }, String(post.likes))
+        ]),
+        el('div', { class:'counter-item shares' }, [
+          svgIcon('share'),
+          el('span', { class:'count shares-count', id:`shares-${post.id}` }, String(post.shares))
+        ]),
+        el('div', { class:'counter-item comments' }, [
+          svgIcon('comment'),
+          el('span', { class:'count comments-count', id:`comments-${post.id}` }, String(post.comments))
+        ])
+      ]);
+
+      const counters = el('div', { class:'counters' }, [leftCounters, el('div', { class:'right' }, 'Statistiques')]);
+      card.appendChild(counters);
+
+      // reactions rectangle
+      const likeBtn = el('button', { class:'like', title:'J\'aime', 'aria-pressed':'false' }, [svgIcon('heart-solid'), el('span', {}, 'J\'aime')]);
+      const commentBtn = el('button', { class:'comment', title:'Commenter' }, [svgIcon('comment'), el('span', {}, 'Commenter')]);
+      const shareBtn = el('button', { class:'share', title:'Partager' }, [svgIcon('share'), el('span', {}, 'Partager')]);
+      const supportBtn = el('button', { class:'support', title:'Soutenir' }, [svgIcon('gift'), el('span', {}, 'Soutenir')]);
+
+      // Attach data-id
+      [likeBtn, commentBtn, shareBtn, supportBtn].forEach(b => b.dataset.post = post.id);
+
+      const reactionButtons = el('div', { class:'reaction-buttons' }, [likeBtn, commentBtn, shareBtn, supportBtn]);
+      const reactions = el('div', { class:'reactions' }, [reactionButtons, el('div', { class:'reaction-note', style:'color:var(--muted);font-size:0.9rem' }, 'Réagir')]);
+      card.appendChild(reactions);
+
+      // comment box (hidden)
+      const commentBox = el('div', { class:'comment-box', style:'display:none;' }, [
+        el('input', { type:'text', placeholder:'Écrire un commentaire...', 'aria-label':'Écrire un commentaire' }),
+        el('button', { class:'btn-send' }, 'Envoyer')
+      ]);
+      card.appendChild(commentBox);
+
+      // Event listeners
+      likeBtn.addEventListener('click', () => {
+        const id = post.id;
+        const elBtn = likeBtn;
+        const countEl = document.getElementById('likes-' + id);
+        let cnt = parseInt(countEl.textContent,10) || 0;
+        const active = elBtn.classList.toggle('active');
+        elBtn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        cnt = active ? cnt + 1 : Math.max(0, cnt -1);
+        countEl.textContent = cnt;
+      });
+
+      commentBtn.addEventListener('click', () => {
+        commentBox.style.display = commentBox.style.display === 'none' ? 'flex' : 'none';
+        const input = commentBox.querySelector('input');
+        if (commentBox.style.display !== 'none') input.focus();
+      });
+
+      shareBtn.addEventListener('click', () => {
+        incrementShares(post.id, 1);
+      });
+
+      supportBtn.addEventListener('click', () => {
+        incrementSupport(post.id, 1);
+      });
+
+      // comment send
+      commentBox.querySelector('.btn-send').addEventListener('click', () => {
+        const input = commentBox.querySelector('input');
+        const text = (input.value || '').trim();
+        if (!text) return;
+        incrementComments(post.id, 1);
+        // Optionally append comment preview (simple)
+        const preview = el('div', { style:'margin-top:8px;color:var(--muted);font-size:0.9rem;' }, `Vous : ${text}`);
+        card.appendChild(preview);
+        input.value = '';
+      });
+
+      return card;
+    }
+
+    function renderFeed(posts) {
+      feedEl.innerHTML = '';
+      posts.forEach(p => feedEl.appendChild(renderPost(p)));
+    }
+
+    // counters update helpers
+    function incrementViews(id, n=1) {
+      const el = document.getElementById('views-' + id);
+      let v = parseInt(el.textContent,10) || 0; v += n; el.textContent = v;
+    }
+    function incrementShares(id, n=1) {
+      const el = document.getElementById('shares-' + id);
+      let v = parseInt(el.textContent,10) || 0; v += n; el.textContent = v;
+    }
+    function incrementComments(id, n=1) {
+      const el = document.getElementById('comments-' + id);
+      let v = parseInt(el.textContent,10) || 0; v += n; el.textContent = v;
+    }
+    function incrementSupport(id, n=1) {
+      // We'll reuse shares display for support demonstration OR show an alert.
+      alert('Merci pour votre soutien ! (action démonstrative)');
+    }
+
+    // initial render
+    renderFeed(fakePosts);
+
+    // ======== Navigation logic (topbar & navbar bloqués) ========
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const view = btn.dataset.view;
+        switchView(view);
+        navButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    function switchView(view) {
+      const views = ['feed','messages','create','notifs','profile'];
+      views.forEach(v => {
+        const el = document.getElementById('view-' + v);
+        if (!el) return;
+        el.style.display = (v === view) ? '' : 'none';
+      });
+      // if switching back to feed, focus feed scroll region
+      if (view === 'feed') document.getElementById('view-feed').scrollIntoView({behavior:'smooth'});
+    }
+
+    // topbar search toggle
+    const openSearchBtn = document.getElementById('openSearch');
+    const searchBar = document.getElementById('searchBar');
+    const topSearchInput = document.getElementById('topSearchInput');
+
+    openSearchBtn.addEventListener('click', ()=> {
+      const shown = getComputedStyle(searchBar).display !== 'none';
+      if (shown) {
+        searchBar.style.display = 'none';
+      } else {
+        searchBar.style.display = 'flex';
+        topSearchInput.focus();
+      }
+    });
+
+    // simple search: filtre posts par auteur ou texte
+    topSearchInput.addEventListener('input', () => {
+      const q = (topSearchInput.value || '').trim().toLowerCase();
+      document.querySelectorAll('.feed .card').forEach(card => {
+        const text = (card.textContent || '').toLowerCase();
+        card.style.display = q === '' ? '' : (text.includes(q) ? '' : 'none');
+      });
+    });
+
+    // Keyboard: Esc hides search
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchBar.style.display = 'none';
+      }
+    });
+
+    // Accessibility: announce visible posts count when filtering
+    const feedArea = document.getElementById('mainView');
+    const observer = new MutationObserver(()=> {
+      const visible = Array.from(document.querySelectorAll('.feed .card')).filter(c => c.offsetParent !== null).length;
+      feedArea.setAttribute('aria-label', visible + ' publications visibles');
+    });
+    observer.observe(feedEl, {childList:true, subtree:true, attributes:true, attributeFilter:['style']});
+
+    // Helper: svg icons
+    function svgIcon(name) {
+      const svgs = {
+        'heart': '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 7.3c0 5.2-8.8 10.8-8.8 10.8S3.2 12.5 3.2 7.3A4.1 4.1 0 0 1 7.3 3.2c1.7 0 2.9 1 3.5 1.8.6-.8 1.8-1.8 3.5-1.8a4.1 4.1 0 0 1 4.3 4.1z"/></svg>',
+        'heart-solid': '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.5-10.5-7.2A5.4 5.4 0 0 1 1 9.6C1 6.7 3 4.5 5.6 4.5c1.6 0 3 .8 3.9 2.1L12 9l2.5-2.4C15.4 5.3 16.8 4.5 18.4 4.5 21 4.5 23 6.7 23 9.6c0 1.9-.9 3.6-2.5 4.6C19.5 16.5 12 21 12 21z"/></svg>',
+        'comment': '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 6h-18v12h4v4l4-4h10z"/></svg>',
+        'share': '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.03-.47-.09-.7l7-4.11A2.99 2.99 0 1014 7a2.99 2.99 0 001.96.77l7 4.11c.05.23.09.46.09.7s-.03.47-.09.7l-7 4.11c-.52.47-1.2.77-1.96.77z"/></svg>',
+        'gift': '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7M3 7h18v5H3zM8 7a3 3 0 0 1 6 0"/></svg>',
+        'eye': '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'
+      };
+      const wrapper = document.createElement('span');
+      wrapper.innerHTML = svgs[name] || '';
+      return wrapper.firstChild;
+    }
+
+    // Initial ready: ensure feed view visible
+    switchView('feed');
+  </script>
 </body>
 </html>

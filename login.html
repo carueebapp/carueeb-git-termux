@@ -1,160 +1,93 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carueeb – Login</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Carueeb - Login</title>
 
-    body {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(135deg, #5f7388, #2f3f52);
-      color: #fff;
-    }
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif; }
 
-    /* Logo central */
-    .logo-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      margin-top: 40px;
-    }
+body {
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:radial-gradient(circle at top, #A7D8F5 0%, #3D5AFE 100%);
+  overflow:hidden;
+}
 
-    .logo {
-      width: 120px;
-      height: 120px;
-      background: radial-gradient(circle at center, #f2a64a, #d1842d);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 80px;
-      font-weight: bold;
-      color: #fff;
-      position: relative;
-      transition: transform 0.3s;
-    }
+.container { text-align:center; }
 
-    .logo:hover {
-      transform: scale(1.1);
-    }
+.logo {
+  font-size:90px;
+  font-weight:700;
+  color:white;
+  transform:scale(0.95);
+  opacity:0;
+  animation:logoAnim 1s ease forwards;
+  text-shadow:8px 10px 20px rgba(0,0,0,0.25);
+}
 
-    .logo::after {
-      content: "";
-      width: 16px;
-      height: 16px;
-      background: #fff;
-      border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+.brand {
+  margin-top:12px;
+  font-size:20px;
+  font-weight:500;
+  letter-spacing:0.02em;
+  color:#F2F2F2;
+  opacity:0;
+  animation:textAnim 1s ease forwards;
+  animation-delay:0.3s;
+}
 
-    .app-name {
-      margin-top: 16px;
-      font-size: 24px;
-      letter-spacing: 2px;
-      font-weight: 600;
-    }
+.pagination {
+  position:absolute;
+  bottom:40px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
 
-    /* Formulaire */
-    .form-container {
-      width: 100%;
-      max-width: 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 60px;
-    }
+.dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.4); }
+.dot.active { background:white; }
 
-    input {
-      width: 100%;
-      padding: 14px;
-      margin: 8px 0;
-      border-radius: 12px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-    }
+@keyframes logoAnim { to { transform:scale(1); opacity:1; } }
+@keyframes textAnim { to { opacity:1; } }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      border-radius: 12px;
-      border: none;
-      background: #f2a64a;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background: #d1842d;
-    }
-
-    /* 6 petites boules */
-    .dots {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #fff;
-      opacity: 0.5;
-      transition: opacity 0.3s, transform 0.3s;
-    }
-
-    .dot:hover {
-      opacity: 1;
-      transform: scale(1.2);
-    }
-  </style>
+.fade-out { animation:fadeOut 0.3s ease forwards; }
+@keyframes fadeOut { to { opacity:0; transform:translateX(-10px); } }
+</style>
 </head>
+
 <body>
 
-  <!-- Logo -->
-  <div class="logo-container">
-    <div class="logo">C</div>
-    <div class="app-name">carueeb</div>
-  </div>
+<div class="container" id="splashContainer">
+  <div class="logo">C</div>
+  <div class="brand">carueeb</div>
+</div>
 
-  <!-- Formulaire Login -->
-  <div class="form-container">
-    <input type="text" placeholder="Email ou numéro">
-    <input type="password" placeholder="Mot de passe">
-    <button onclick="window.location.href='choix.html'">Connexion</button>
-  </div>
+<div class="pagination">
+  <div class="dot active"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
 
-  <!-- 6 petites boules -->
-  <div class="dots">
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
-  </div>
+<script>
+// Redirection après 6 secondes vers choice.html
+setTimeout(() => {
+  const container = document.getElementById("splashContainer");
+  container.classList.add("fade-out");
+
+  setTimeout(() => {
+    window.location.href = "choice.html";
+  }, 300);
+
+}, 6000);
+</script>
 
 </body>
 </html>
